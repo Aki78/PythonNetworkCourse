@@ -23,3 +23,8 @@ while 1:
     print(type(client_address))
     print(client_address)
     print(f"Connect to {client_address}!\n")
+
+    #Send a message to the client that just connected
+    client_socket.send(b"You are connected!")
+    server_socket.close()
+    break
