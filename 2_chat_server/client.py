@@ -2,6 +2,7 @@ import socket, threading
 
 #Constants
 DEST_IP = socket.gethostbyname(socket.gethostname())
+print(DEST_IP)
 DEST_PORT = 12345
 
 ENCODER = 'utf-8'

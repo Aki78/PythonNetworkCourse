@@ -2,7 +2,7 @@ import socket, threading
 
 #Constants
 HOST_IP = socket.gethostbyname(socket.gethostname())
-HOST_PORT = 12345
+HOST_PORT = 11111
 ENCODER = 'utf-8'
 BYTESIZE = 1024
 
@@ -29,7 +29,7 @@ def recieve_message(client_socket):
             index = client_socket_list.index(client_socket)
             name = client_name_list[index]
             message = client_socket.recv(BYTESIZE).decode(ENCODER)
-            message = f"\033[1;92m\t{name}: {message}\033[0m".encode(ENCODER)
+            message = f"{name}: {message}".encode(ENCODER)
             broadcast_message(message)
 
         except:
