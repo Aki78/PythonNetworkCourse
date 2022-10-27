@@ -1,4 +1,5 @@
 import pygame, socket, threading, json
+from socket import AF_INET, SOCK_STREAM
 
 #----------------------------------------------------------------
 #Define socket constants to be used and ALTERED
@@ -11,7 +12,12 @@ class Connection():
     '''A socket connection class for players to connect to a server'''
     def __init__(self):
         '''Init for the connection class'''
-        pass
+        self.encoder = 'utf-8'
+        self.header_length = 10
+    
+        #Create a socket and connect
+        self.player_socket = socket.socket(AF_INET, SOCK_STREAM)
+        self.player_socket.connect((DESt_IP, DEST_PORT))
 
 class Player():
     '''A player class the client can control'''
@@ -79,17 +85,29 @@ class Game():
 #Create a connection and get game window information from the server.
 my_connection = Connection()
 
+packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
+room_size = int(my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
+
+packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
+round_time = int(my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
+
+packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
+fps = int(my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
+
+packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
+total_players = int(my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
+
 #Init pygame
 pygame.init()
 
 #Set game contants
-WIDTH = 700
-HEIGHT = 700
-ROUND_TIME = 60
+WIDTH = room_size
+HEIGHT = room_size
+ROUND_TIME = round_time
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 MAGENTA =(155,0,155)
-FPS = 30
+FPS = fps
 clock = pygame.time.Clock()
 font = pygame.font.SysFont('gabriola', 28)
 
@@ -99,7 +117,7 @@ pygame.display.set_caption("~~Color Collide~~")
 
 #Create player and game objects
 my_player = Player(my_connection)
-my_game = Game(my_connection, my_player, 4)
+my_game = Game(my_connection, my_player, total_players)
 
 #The main game loop
 running = True

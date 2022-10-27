@@ -25,17 +25,33 @@ if TOTAL_PLAYERS > 4:
 
 #-----------------------------------------------
 #Define Classes
+
+def send_header(connection,player_socket,message):
+    header = str(len(str(message)))
+    while len(header) < connection.header_length: #"700" -> "700        "
+        header += " "
+
+    player_socket.send(header.encode(connection.encoder))
+    player_socket.send(str(ROOM_SIZE).encode(connection.encoder))
+
+
 class Connection():
     '''A socket connection class to be used as a server'''
     def __init__(self):
         '''Init of the connection class'''
-        pass
+        self.encoder = 'utf-8'
+        self.header_length = 10
+
+        #Create a socket, bind, and listen
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((HOST_IP, HOST_PORT))
+        self.server_socket.listen()
 
 class Player():
     '''A class store a connected clients player information'''
-    def __init__(self):
+    def __init__(self, player_count):
         '''Init of the connection class'''
-        pass
+        self.player_count = player_count
 
 
     def set_player_info(self, player_info):
@@ -50,10 +66,34 @@ class Game():
     '''A class to handle all operations of gameplay'''
     def __init__(self, connection):
         '''Init of the game class'''
-        pass
+        self.connection = connection
+        self.player_count = 0
+        self.player_objects = []
+        self.player_sockets = []
+        self.round_time = ROUND_TIME
+        
     def connect_players(self):
         '''Connect ANY incoming player to the game'''
-        pass
+        #Only accept players if the player count is less than total players
+        while self.player_count < TOTAL_PLAYERS:
+            #Acept incoming player socket connections
+            player_socket, player_address = self.connection.server_socket.accept()
+
+            #Send the current game configuration values over the client
+            send_header(self.connection, player_socket, ROUND_TIME)
+            send_header(self.connection, player_socket, FPS)
+            send_header(self.connection, player_socket, TOTAL_PLAYERS)
+
+            #Create a new Player object for the connected client
+            self.player_count += 1
+            player = Player(self.player_count)
+            self.player_objects.append(player)
+            self.player_sockets.append(player_socket)
+            print(f"New player joining from {player_address}...Total players: {self.player_count}")
+
+        #Maximum number of players reached. No longer accepting new players
+        print(f"{TOTAL_PLAYERS} players in game. No longer accepting new players...")
+
 
     def broadcast(self):
         '''Broadcast information to ALL players'''
