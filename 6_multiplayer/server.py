@@ -27,7 +27,8 @@ if TOTAL_PLAYERS > 4:
 #Define Classes
 
 def send_header(connection,player_socket,message):
-    header = str(len(str(message)))
+    header = str(message)
+    print(header)
     while len(header) < connection.header_length: #"700" -> "700        "
         header += " "
 

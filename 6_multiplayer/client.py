@@ -91,7 +91,9 @@ room_size = int(my_connection.player_socket.recv(int(packet_size)).decode(my_con
 packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
 round_time = int(my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
 
+print("value: ", my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
 packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
+print("value: ", my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
 fps = int(my_connection.player_socket.recv(int(packet_size)).decode(my_connection.encoder))
 
 packet_size = my_connection.player_socket.recv(my_connection.header_length).decode(my_connection.encoder)
